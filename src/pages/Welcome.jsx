@@ -13,6 +13,12 @@ function Welcome() {
       >
         🍳Reggeli Rulett
       </button>
+            <button
+        className="btn btn-start"
+        onClick={() => navigate("/dashboard")}
+      >
+        Dashboard
+      </button>
     </div>
   );
 }

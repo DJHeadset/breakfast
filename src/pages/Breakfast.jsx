@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import "../styles/breakfast.css";
 import { useNavigate } from "react-router-dom";
+import "../styles/breakfast.css";
 
 function Breakfast() {
   const navigate = useNavigate();
