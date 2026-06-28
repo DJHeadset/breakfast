@@ -15,7 +15,7 @@ function Breakfast() {
 
   async function loadYesterday() {
     try {
-      const res = await fetch("http://backend:5000/roulette/yesterday_choices")
+      const res = await fetch("/roulette/yesterday_choices")
       const data = await res.json();
 
       setOptions(data.options || []);
@@ -60,7 +60,7 @@ function Breakfast() {
       clearInterval(spinRef.current);
 
       try {
-        const res = await fetch("http://backend:5000/roulette/todays_winner", {
+        const res = await fetch("/roulette/todays_winner", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
