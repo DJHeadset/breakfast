@@ -3,7 +3,10 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-@@ -10,16 +10,6 @@ COPY . .
+COPY package*.json ./
+RUN npm install
+
+COPY . .
 RUN npm run build
 
 
