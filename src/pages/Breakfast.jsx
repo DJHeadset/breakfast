@@ -91,7 +91,7 @@ function Breakfast() {
         <button className="btn btn-back" onClick={() => navigate("/")}>
           ← Back
         </button>
-        <h1 className="title">🍳 BREAKFAST ROULETTE</h1>
+        <h1 className="title">🍳 REGGELI RULETT</h1>
 
         <button
           className="btn btn-start"
@@ -116,7 +116,7 @@ function Breakfast() {
         <button className="btn btn-back" onClick={() => navigate("/")}>
           ← Back
         </button>
-        <h1>🍳 Breakfast Roulette</h1>
+        <h1>🍳 Reggeli Rulett</h1>
 
         {options.map((opt, i) => (
           <div className="option-row" key={i}>
@@ -146,7 +146,7 @@ function Breakfast() {
           onClick={spin}
           disabled={options.length === 0}
         >
-          🎰 SPIN
+          🎰 PÖRGET
         </button>
       </div>
     );
@@ -164,7 +164,7 @@ function Breakfast() {
         </button>
         {spinning && (
           <>
-            <h1 className="spinning">Spinning...</h1>
+            <h1 className="spinning">Pörög...</h1>
             <h2 className="current-option">{current}</h2>
           </>
         )}

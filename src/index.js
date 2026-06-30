@@ -4,6 +4,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Breakfast from "./pages/Breakfast";
 import Welcome from "./pages/Welcome.jsx";
 import DashBoard from "./pages/Dashboard.jsx";
+import Lunch from "./pages/Lunch.jsx";
+import Dinner from "./pages/Dinner.jsx";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +16,15 @@ const router = createBrowserRouter([
     path: "/breakfast",
     element: <Breakfast />,
   },
-    {
+  {
+    path: "/lunch",
+    element: <Lunch />,
+  },
+  {
+    path: "/dinner",
+    element: <Dinner />,
+  },
+  {
     path: "/dashboard",
     element: <DashBoard />,
   },
