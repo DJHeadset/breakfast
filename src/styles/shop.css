@@ -1,0 +1,20 @@
+.shop-list {
+  width: 100%;
+}
+
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shop-item-name {
+  text-align: left;
+}
+
+.shop-item-points {
+  text-align: right;
+  white-space: nowrap;
+}

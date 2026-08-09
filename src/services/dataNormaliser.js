@@ -14,16 +14,10 @@ export function createKid(data = {}) {
     score: data.score ?? 0,
     availableScore: data.availableScore ?? 0,
     actualScore: data.actualScore ?? 0,
-
     percent: data.percent ?? 0,
-
-    mood: data.mood ?? "Unknown",
-
-    streak: data.streak ?? 0,
+    activeTitle: data.activeTitle ?? "",
     gold: data.gold ?? 0,
     warnings: data.warnings ?? 0,
-
-    activeTitle: data.activeTitle ?? "",
 
     skills: (data.skills ?? []).map(createSkill),
 

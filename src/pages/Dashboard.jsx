@@ -8,180 +8,10 @@ function DashBoard() {
   const navigate = useNavigate();
 
   const [isFlipped, setIsFlipped] = useState(false);
-  const initialKids = {
-    Zolika: {
-      avatar: "🧠",
-      score: 120,
-      mood: "Boldog",
-      choresDone: 5,
-      choresTotal: 10,
-      streak: 4,
-      energy: 72,
-      warnings: 1,
-      activeTitle: "Szárítólovag",
-
-      skills: [
-        {
-          skill: "Mosogatás",
-          xp: 6,
-          stars: 1,
-          title: "Mosogatóinas",
-        },
-        {
-          skill: "Törölgetés",
-          xp: 2,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "Söprés",
-          xp: 8,
-          stars: 1,
-          title: "Seprűforgató",
-        },
-        {
-          skill: "Pakolás",
-          xp: 10,
-          stars: 2,
-          title: "Rendszerező",
-        },
-        {
-          skill: "Felmosás",
-          xp: 1,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "Teregetés",
-          xp: 5,
-          stars: 1,
-          title: "Szárítólovag",
-        },
-        {
-          skill: "Hajtogatás",
-          xp: 0,
-          stars: 0,
-          title: "",
-        },
-      ],
-    },
-    Mano: {
-      avatar: "🧠",
-      score: 65,
-      mood: "OK",
-      choresDone: 3,
-      choresTotal: 6,
-      streak: 2,
-      energy: 55,
-      warnings: 2,
-      activeTitle: "Rendszerező",
-
-      skills: [
-        {
-          skill: "mosogatas",
-          xp: 3,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "torolgetes",
-          xp: 1,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "sopres",
-          xp: 2,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "pakolas",
-          xp: 10,
-          stars: 2,
-          title: "Rendszerező",
-        },
-        {
-          skill: "felmosas",
-          xp: 0,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "teregetes",
-          xp: 2,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "hajtogatas",
-          xp: 1,
-          stars: 0,
-          title: "",
-        },
-      ],
-    },
-    Bogi: {
-      avatar: "🧠",
-      score: 92,
-      mood: "HISZTI",
-      choresDone: 7,
-      choresTotal: 7,
-      streak: 2,
-      energy: 88,
-      warnings: 0,
-      activeTitle: "Törlőőr",
-
-      skills: [
-        {
-          skill: "mosogatas",
-          xp: 12,
-          stars: 2,
-          title: "Tányérlovag",
-        },
-        {
-          skill: "torolgetes",
-          xp: 7,
-          stars: 1,
-          title: "Törlőőr",
-        },
-        {
-          skill: "sopres",
-          xp: 4,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "pakolas",
-          xp: 6,
-          stars: 1,
-          title: "Rendrakó",
-        },
-        {
-          skill: "felmosas",
-          xp: 3,
-          stars: 0,
-          title: "",
-        },
-        {
-          skill: "teregetes",
-          xp: 9,
-          stars: 1,
-          title: "Szárítólovag",
-        },
-        {
-          skill: "hajtogatas",
-          xp: 2,
-          stars: 0,
-          title: "",
-        },
-      ],
-    },
-  };
 
   const [kids, setKids] = useState({});
 
-  const handleClick = (kidName, title) => {
+  const handleClick = async (kidName, title) => {
     setKids((prev) => ({
       ...prev,
       [kidName]: {
@@ -189,6 +19,21 @@ function DashBoard() {
         activeTitle: title,
       },
     }));
+
+    try {
+      await fetch("http://192.168.0.38:5000/misc/change_tittle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          kid: kidName,
+          title: title,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to save title:", err);
+    }
   };
 
   const renderFront = (kidName, kid) => {
@@ -197,13 +42,13 @@ function DashBoard() {
     return (
       <div className="stats-grid">
         <div className="stat-box">
-          <span className="stat-label">CHORE RATE</span>
+          <span className="stat-label">FELADAT</span>
           <span className="stat-value">{percent}%</span>
         </div>
 
         <div className="stat-box">
-          <span className="stat-label">STREAK</span>
-          <span className="stat-value">{kid.score} DAYS</span>
+          <span className="stat-label">JÓ GYEREKEK</span>
+          <span className="stat-value">{kid.score} NAPJA</span>
         </div>
 
         <div className="stat-box">
@@ -212,7 +57,7 @@ function DashBoard() {
         </div>
 
         <div className="stat-box warning">
-          <span className="stat-label">WARNINGS</span>
+          <span className="stat-label">BÜNTETÉS</span>
           <span className="stat-value">{kid.warnings}</span>
         </div>
       </div>
@@ -223,13 +68,12 @@ function DashBoard() {
     return (
       <div className="kid-card-inner">
         <div className="card-face card-back">
-          <h3>Skill Progression</h3>
+          <h3>Skill</h3>
 
           <div className="skills-container">
             {kid.skills
               .filter((skill) => skill.xp > 0)
               .map((skill) => (
-                //console.log(skill.name);
                 <div key={skill.name} className="skill-row">
                   {/* HEADER */}
                   <div className="skill-header">
@@ -279,7 +123,7 @@ function DashBoard() {
 
   useEffect(() => {
     const loadKids = async () => {
-      const data = await getOldJson();
+      const data = await getOldJson("/chores/get_chores");
       setKids(normalizeKids(data));
     };
     loadKids();
@@ -294,7 +138,6 @@ function DashBoard() {
           const percent = Math.round(
             (kid.actualScore / kid.availableScore) * 100,
           );
-          //console.log(percent);
 
           return (
             <div className="kid-card" key={kidName}>
@@ -325,7 +168,7 @@ function DashBoard() {
 
               <div className="progress-section">
                 <div className="progress-top">
-                  <span>Daily Tasks</span>
+                  <span>Napi Feladatok</span>
                   <span>
                     {kid.actualScore}/{kid.availableScore}
                   </span>
@@ -346,13 +189,13 @@ function DashBoard() {
                     setIsFlipped(!isFlipped);
                   }}
                 >
-                  DETAILS
+                  RÉSZLETEK
                 </button>
                 <button
                   className="action-btn secondary"
                   onClick={() => navigate(`/shop/${kidName}`)}
                 >
-                  REWARD
+                  BOLT
                 </button>
               </div>
             </div>
