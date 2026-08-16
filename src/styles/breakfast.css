@@ -51,8 +51,28 @@ body {
   width: min(80vw, 350px);
   height: 100px;
   font-size: 2em;
-  background: #f39c12;
+
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 20px;
+
+  color: white;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-start:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+}
+
+.btn-start:active {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(0.98);
 }
 
 .btn-wip {

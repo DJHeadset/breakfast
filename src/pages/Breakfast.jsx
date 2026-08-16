@@ -4,6 +4,8 @@ import "../styles/breakfast.css";
 
 function Breakfast() {
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const [phase, setPhase] = useState(1);
   const [options, setOptions] = useState([]);
   const [winner, setWinner] = useState("");
@@ -15,7 +17,7 @@ function Breakfast() {
 
   async function loadYesterday() {
     try {
-      const res = await fetch("http://192.168.0.38:5000/roulette/yesterday_choices")
+      const res = await fetch(`${API_URL}/roulette/yesterday_choices`);
       const data = await res.json();
 
       setOptions(data.options || []);
@@ -60,7 +62,7 @@ function Breakfast() {
       clearInterval(spinRef.current);
 
       try {
-        const res = await fetch("http://192.168.0.38:5000/roulette/todays_winner", {
+        const res = await fetch(`${API_URL}/roulette/todays_winner`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

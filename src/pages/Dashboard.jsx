@@ -6,9 +6,9 @@ import { normalizeKids } from "../services/dataNormaliser";
 
 function DashBoard() {
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const [isFlipped, setIsFlipped] = useState(false);
-
   const [kids, setKids] = useState({});
 
   const handleClick = async (kidName, title) => {
@@ -21,7 +21,7 @@ function DashBoard() {
     }));
 
     try {
-      await fetch("http://192.168.0.38:5000/misc/change_tittle", {
+      await fetch(`${API_URL}/misc/change_tittle`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +56,14 @@ function DashBoard() {
           <span className="stat-value">{kid.energy}%</span>
         </div>
 
-        <div className="stat-box warning">
+        <div
+          className={`stat-box warning ${
+            kid.warnings >= 3 ? "warning-nuclear" : ""
+          }`}
+          style={{
+            "--warning-level": Math.min(kid.warnings, 3),
+          }}
+        >
           <span className="stat-label">BÜNTETÉS</span>
           <span className="stat-value">{kid.warnings}</span>
         </div>
@@ -192,10 +199,18 @@ function DashBoard() {
                   RÉSZLETEK
                 </button>
                 <button
-                  className="action-btn secondary"
-                  onClick={() => navigate(`/shop/${kidName}`)}
+                  className={`action-btn secondary ${
+                    kid.warnings >= 3 ? "shop-locked" : ""
+                  }`}
+                  onClick={() => {
+                    if (kid.warnings < 3) {
+                      navigate(`/shop/${kidName}`);
+                    }
+                  }}
                 >
-                  BOLT
+                  <span className="shop-button-text">BOLT</span>
+
+                  {kid.warnings >= 3 && <span className="shop-lock">✕</span>}
                 </button>
               </div>
             </div>
