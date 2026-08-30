@@ -61,8 +61,8 @@ function Shop() {
   useEffect(() => {
     const loadData = async () => {
       const [shopData, kidsData] = await Promise.all([
-        getOldJson("/misc/get_shop"),
-        getOldJson("/chores/get_chores"),
+        getOldJson("tasks.json"),
+        getOldJson("chores.json"),
       ]);
 
       setShop(shopData.shop);

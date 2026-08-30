@@ -259,3 +259,33 @@
 
   border: 1px solid rgba(255, 190, 60, 0.2);
 }
+
+
+.pull-handle {
+  cursor: grab;
+  touch-action: none;
+}
+
+.pull-handle:active {
+  cursor: grabbing;
+}
+
+.secret-container {
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+}
+
+.secret-content {
+  padding: 20px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.secret-revealed .secret-content {
+  opacity: 1;
+  transform: translateY(0);
+}

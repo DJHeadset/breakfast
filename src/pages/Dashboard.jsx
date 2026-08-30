@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/kidCard.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getOldJson } from "../services/jsonService";
 import { normalizeKids } from "../services/dataNormaliser";
 
@@ -10,6 +10,11 @@ function DashBoard() {
 
   const [isFlipped, setIsFlipped] = useState(false);
   const [kids, setKids] = useState({});
+  const [medications, setMedications] = useState({});
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isSecretRevealed, setIsSecretRevealed] = useState(false);
+  const [isRestocking, setIsRestocking] = useState(false);
+  const pullStartY = useRef(null);
 
   const handleClick = async (kidName, title) => {
     setKids((prev) => ({
@@ -35,6 +40,37 @@ function DashBoard() {
       console.error("Failed to save title:", err);
     }
   };
+
+  async function handleRestock(boxes) {
+    //console.log(boxes*50)
+    setIsRestocking(false);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/misc/pills`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          item: "tegretol",
+          boxes,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setMedications((prev) => ({
+          ...prev,
+          tegretol: {
+            ...prev.tegretol,
+            quantity: data.quantity,
+          },
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   const renderFront = (kidName, kid) => {
     const percent = Math.round((kid.actualScore / kid.availableScore) * 100);
@@ -128,10 +164,60 @@ function DashBoard() {
     );
   };
 
+  const SecretMenu = () => {
+    const medication = medications.tegretol;
+    const pillCount = medication?.quantity ?? 0;
+    const pillsPerDay = medication?.perDay ?? 3;
+
+    const enoughUntil = new Date();
+    enoughUntil.setDate(
+      enoughUntil.getDate() + Math.floor(pillCount / pillsPerDay),
+    );
+
+    return (
+      <div className="secret-content">
+        <div className="secret-title">🔐 TEGRETOL — KÉSZLET</div>
+
+        <div className="pill-count">
+          💊 {pillCount} {medication?.unit ?? "tabletta"}
+        </div>
+
+        <div className="enough-until">
+          Elég eddig: {enoughUntil.toLocaleDateString("hu-HU")}
+        </div>
+
+        {!isRestocking ? (
+          <button
+            className="restock-button"
+            onClick={() => setIsRestocking(true)}
+          >
+            + GYÓGYSZER VÁSÁRLÁS
+          </button>
+        ) : (
+          <div className="restock-buttons">
+            <button className="restock-button" onClick={() => handleRestock(1)}>
+              +1 📦
+            </button>
+
+            <button className="restock-button" onClick={() => handleRestock(2)}>
+              +2 📦
+            </button>
+
+            <button className="restock-button" onClick={() => handleRestock(3)}>
+              +3 📦
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   useEffect(() => {
     const loadKids = async () => {
-      const data = await getOldJson("/chores/get_chores");
+      const data = await getOldJson("chores.json");
+      const tasks = await getOldJson("tasks.json");
       setKids(normalizeKids(data));
+      setMedications(tasks.medications);
     };
     loadKids();
   }, []);
@@ -149,8 +235,39 @@ function DashBoard() {
           return (
             <div className="kid-card" key={kidName}>
               <div className="card-glow"></div>
+              <div
+                className={`kid-header ${
+                  kidName === "Zolika" ? "pull-handle" : ""
+                }`}
+                onPointerDown={(e) => {
+                  if (kidName !== "Zolika") return;
 
-              <div className="kid-header">
+                  pullStartY.current = e.clientY;
+                  e.currentTarget.setPointerCapture(e.pointerId);
+                }}
+                onPointerMove={(e) => {
+                  if (kidName !== "Zolika") return;
+                  if (pullStartY.current === null) return;
+
+                  const distance = e.clientY - pullStartY.current;
+
+                  if (distance > 0) {
+                    setPullDistance(Math.min(distance, 180));
+                  }
+                }}
+                onPointerUp={() => {
+                  if (kidName !== "Zolika") return;
+
+                  if (pullDistance > 80) {
+                    setIsSecretRevealed(true);
+                  } else {
+                    setIsSecretRevealed(false);
+                  }
+
+                  setPullDistance(0);
+                  pullStartY.current = null;
+                }}
+              >
                 <div className="kid-avatar">{kid.avatar}</div>
 
                 <div>
@@ -162,6 +279,19 @@ function DashBoard() {
                   <span>{kid.gold}</span>
                 </div>
               </div>
+
+              {kidName === "Zolika" && (
+                <div
+                  className={`secret-container ${
+                    isSecretRevealed ? "secret-revealed" : ""
+                  }`}
+                  style={{
+                    maxHeight: isSecretRevealed ? "180px" : `${pullDistance}px`,
+                  }}
+                >
+                  <SecretMenu />
+                </div>
+              )}
 
               <div className="divider"></div>
 
@@ -194,6 +324,7 @@ function DashBoard() {
                   className="action-btn"
                   onClick={() => {
                     setIsFlipped(!isFlipped);
+                    setIsSecretRevealed(false);
                   }}
                 >
                   RÉSZLETEK
