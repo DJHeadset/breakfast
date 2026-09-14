@@ -215,9 +215,9 @@ function DashBoard() {
   useEffect(() => {
     const loadKids = async () => {
       const data = await getOldJson("chores.json");
-      const tasks = await getOldJson("tasks.json");
+      const status = await getOldJson("house_status.json");
       setKids(normalizeKids(data));
-      setMedications(tasks.medications);
+      setMedications(status.medications);
     };
     loadKids();
   }, []);

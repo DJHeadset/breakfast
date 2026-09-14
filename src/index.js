@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Breakfast from "./pages/Breakfast";
 import Welcome from "./pages/Welcome.jsx";
 import DashBoard from "./pages/Dashboard.jsx";
-import Lunch from "./pages/Lunch.jsx";
+import Status from "./pages/Status.jsx";
 import Dinner from "./pages/Dinner.jsx";
 import Shop from "./pages/Shop.jsx";
 
@@ -18,8 +18,8 @@ const router = createBrowserRouter([
     element: <Breakfast />,
   },
   {
-    path: "/lunch",
-    element: <Lunch />,
+    path: "/status",
+    element: <Status />,
   },
   {
     path: "/dinner",

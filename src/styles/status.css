@@ -1,0 +1,570 @@
+.status-page {
+  overflow-y: auto;
+  padding-bottom: 40px;
+}
+
+.status-section,
+.person-section {
+  width: min(700px, 90%);
+  margin: 35px auto;
+}
+
+.status-section h2,
+.person-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ================= STATUS ================= */
+
+.status-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 18px 25px;
+
+  margin-bottom: 10px;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.status-name {
+  font-size: 1.2rem;
+}
+
+.status-result {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.status-light {
+  width: 18px;
+
+  height: 18px;
+
+  border-radius: 50%;
+
+  display: inline-block;
+}
+
+.online {
+  background: #2ecc71;
+
+  box-shadow:
+    0 0 8px #2ecc71,
+    0 0 18px #2ecc71;
+}
+
+.offline {
+  background: #e74c3c;
+
+  box-shadow:
+    0 0 8px #e74c3c,
+    0 0 18px #e74c3c;
+}
+
+/* ================= BACKUP INFO ================= */
+
+.backup-info {
+  margin-top: 20px;
+
+  padding: 20px;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.05);
+
+  text-align: center;
+}
+
+.backup-info div {
+  margin: 8px 0;
+}
+
+.backup-info strong {
+  margin-left: 8px;
+}
+
+/* ================= PERSON OF THE DAY ================= */
+
+.person-section {
+  margin-top: 60px;
+}
+
+.person-of-the-day {
+  text-align: center;
+
+  padding: 35px;
+
+  border-radius: 25px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.18),
+    rgba(255, 255, 255, 0.05)
+  );
+
+  border: 2px solid rgba(255, 215, 0, 0.4);
+}
+
+.crown {
+  font-size: 4rem;
+}
+
+.today-person {
+  font-size: 3rem;
+
+  font-weight: bold;
+
+  margin: 10px 0;
+}
+
+.person-description {
+  opacity: 0.7;
+}
+
+/* ================= PERSON STATS ================= */
+
+.person-stats {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 15px;
+
+  margin-top: 20px;
+}
+
+.person-stat {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 20px;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  text-align: center;
+}
+
+.stat-label {
+  opacity: 0.8;
+}
+
+.stat-number {
+  font-size: 2rem;
+}
+
+.tomorrow-person {
+  font-size: 1.5rem;
+}
+
+/* ================= LAST UPDATE ================= */
+
+.last-updated {
+  margin: 40px auto;
+
+  text-align: center;
+
+  opacity: 0.6;
+
+  font-size: 0.9rem;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 600px) {
+  .person-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .today-person {
+    font-size: 2.5rem;
+  }
+
+  .status-row {
+    padding: 15px;
+  }
+}
+
+/* ================= ATTICUUS HDD ================= */
+
+.hdd-card {
+  padding: 25px;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hdd-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 15px;
+
+  font-size: 1.2rem;
+}
+
+.storage-bar {
+  width: 100%;
+
+  height: 25px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.storage-used {
+  height: 100%;
+
+  width: 0;
+
+  background: #2ecc71;
+
+  border-radius: 20px;
+
+  transition: width 0.8s ease;
+}
+
+.storage-info {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 15px;
+
+  font-size: 0.9rem;
+
+  opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+  .storage-info {
+    flex-direction: column;
+
+    gap: 8px;
+  }
+
+  .hdd-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 8px;
+  }
+}
+
+/* ================= ATTICUUS ================= */
+
+.atticuus-card {
+  margin-bottom: 10px;
+
+  border-radius: 15px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.atticuus-main {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 18px 25px;
+
+  border: none;
+
+  background: transparent;
+
+  color: inherit;
+
+  cursor: pointer;
+
+  font-size: 1.2rem;
+}
+
+.atticuus-main:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.atticuus-title {
+  font-size: 1.2rem;
+}
+
+.expand-arrow {
+  margin-left: 10px;
+
+  opacity: 0.6;
+
+  font-size: 0.8rem;
+}
+
+/* ================= DETAILS ================= */
+
+.atticuus-details {
+  padding: 10px 25px 25px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.atticuus-detail-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 15px 0;
+}
+
+.detail-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+/* ================= STORAGE ================= */
+
+.atticuus-storage {
+  padding: 20px 0;
+}
+
+.hdd-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+.storage-bar {
+  width: 100%;
+
+  height: 24px;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.storage-used {
+  height: 100%;
+
+  border-radius: 20px;
+
+  transition: width 0.8s ease;
+}
+
+/* GREEN */
+
+.storage-good {
+  background: #2ecc71;
+}
+
+/* YELLOW */
+
+.storage-warning {
+  background: #f1c40f;
+}
+
+/* RED */
+
+.storage-critical {
+  background: #e74c3c;
+}
+
+.storage-info {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 12px;
+
+  font-size: 0.85rem;
+
+  opacity: 0.8;
+}
+
+/* ================= STATUS LIGHTS ================= */
+
+.status-light {
+  width: 18px;
+
+  height: 18px;
+
+  border-radius: 50%;
+
+  display: inline-block;
+}
+
+.online {
+  background: #2ecc71;
+
+  box-shadow:
+    0 0 8px #2ecc71,
+    0 0 18px #2ecc71;
+}
+
+.warning {
+  background: #f1c40f;
+
+  box-shadow:
+    0 0 8px #f1c40f,
+    0 0 18px #f1c40f;
+}
+
+.critical {
+  background: #e74c3c;
+
+  box-shadow:
+    0 0 8px #e74c3c,
+    0 0 18px #e74c3c;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 600px) {
+  .storage-info {
+    flex-direction: column;
+
+    gap: 6px;
+  }
+}
+
+/* ================= GENERAL STATUS ROW ================= */
+
+.status-row {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 18px 25px;
+
+  margin-bottom: 10px;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.status-name {
+  font-size: 1.2rem;
+}
+
+/* ================= ATTICUUS / BACKUP MAIN ================= */
+
+.atticuus-main,
+.backup-main {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 18px 25px;
+
+  border: none;
+
+  background: transparent;
+
+  color: inherit;
+
+  cursor: pointer;
+
+  font-size: 1.2rem;
+}
+
+.atticuus-title,
+.backup-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+.atticuus-right,
+.backup-right {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+/* ================= BACKUP CARD ================= */
+
+.backup-card {
+  margin-bottom: 10px;
+
+  border-radius: 15px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.backup-details {
+  padding: 10px 25px 25px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.backup-detail-row {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 15px 0;
+}
+
+.backup-detail-text {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.backup-detail-text strong {
+  opacity: 0.8;
+
+  font-size: 0.9rem;
+}

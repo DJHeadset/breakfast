@@ -28,9 +28,9 @@ function Welcome() {
         <button
           className="btn btn-start"
           //style={{ position: "absolute", top: "20px", left: "150%" }}
-          onClick={() => navigate("/lunch")}
+          onClick={() => navigate("/status")}
         >
-          Ebéd Rulett
+          STATUS
         </button>
 
         <button
