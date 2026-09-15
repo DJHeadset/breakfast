@@ -24,10 +24,11 @@ function Status() {
 
     /* ================= STORAGE CALCULATIONS ================= */
 
-    const hasHddData = hdd && hdd.total != null && hdd.available != null;
+    const hasHddData = hdd?.total && hdd?.available;
 
-    const total = hasHddData ? Number(hdd.total) : 0;
-    const available = hasHddData ? Number(hdd.available) : 0;
+    const total = hasHddData ? parseFloat(hdd.total) : 0;
+
+    const available = hasHddData ? parseFloat(hdd.available) : 0;
 
     const used = total - available;
 
@@ -55,18 +56,6 @@ function Status() {
       health = "WARNING";
       healthClass = "warning";
     }
-
-    /* ================= FORMAT SIZE ================= */
-
-    const formatSize = (kb) => {
-      const gb = kb / 1024 / 1024;
-
-      if (gb >= 1024) {
-        return `${(gb / 1024).toFixed(2)} TB`;
-      }
-
-      return `${gb.toFixed(1)} GB`;
-    };
 
     /* ================= STORAGE COLOR ================= */
 
@@ -138,11 +127,11 @@ function Status() {
                   </div>
 
                   <div className="storage-info">
-                    <span>Used: {formatSize(used)}</span>
+                    <span>Used: {used.toFixed(0)}G</span>
 
-                    <span>Free: {formatSize(available)}</span>
+                    <span>Free: {hdd.available}</span>
 
-                    <span>Total: {formatSize(total)}</span>
+                    <span>Total: {hdd.total}</span>
                   </div>
                 </>
               ) : (
