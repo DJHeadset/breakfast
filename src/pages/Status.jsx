@@ -24,25 +24,33 @@ function Status() {
 
     /* ================= STORAGE CALCULATIONS ================= */
 
-    const total = Number(hdd?.total || 0);
-    const available = Number(hdd?.available || 0);
+    const hasHddData = hdd && hdd.total != null && hdd.available != null;
+
+    const total = hasHddData ? Number(hdd.total) : 0;
+    const available = hasHddData ? Number(hdd.available) : 0;
 
     const used = total - available;
 
-    const usedPercent = total > 0 ? (used / total) * 100 : 0;
+    const usedPercent = hasHddData && total > 0 ? (used / total) * 100 : null;
 
     /* ================= HEALTH STATUS ================= */
 
     let health = "ONLINE";
     let healthClass = "online";
 
-    // CRITICAL
+    // Atticuus itself is offline
     if (status !== "ONLINE") {
       health = "CRITICAL";
       healthClass = "critical";
     }
 
-    // WARNING
+    // Atticuus is online, but HDD information is unavailable
+    else if (!hasHddData) {
+      health = "WARNING";
+      healthClass = "warning";
+    }
+
+    // HDD is available and getting full
     else if (usedPercent >= 80) {
       health = "WARNING";
       healthClass = "warning";
@@ -112,28 +120,38 @@ function Status() {
             {/* HDD STORAGE */}
 
             <div className="atticuus-storage">
-              <div className="hdd-header">
-                <span>💾 Storage</span>
+              {hasHddData ? (
+                <>
+                  <div className="hdd-header">
+                    <span>💾 Storage</span>
 
-                <strong>{usedPercent.toFixed(1)}% used</strong>
-              </div>
+                    <strong>{usedPercent.toFixed(1)}% used</strong>
+                  </div>
 
-              <div className="storage-bar">
-                <div
-                  className={`storage-used ${storageClass}`}
-                  style={{
-                    width: `${Math.min(usedPercent, 100)}%`,
-                  }}
-                />
-              </div>
+                  <div className="storage-bar">
+                    <div
+                      className={`storage-used ${storageClass}`}
+                      style={{
+                        width: `${Math.min(usedPercent, 100)}%`,
+                      }}
+                    />
+                  </div>
 
-              <div className="storage-info">
-                <span>Used: {formatSize(used)}</span>
+                  <div className="storage-info">
+                    <span>Used: {formatSize(used)}</span>
 
-                <span>Free: {formatSize(available)}</span>
+                    <span>Free: {formatSize(available)}</span>
 
-                <span>Total: {formatSize(total)}</span>
-              </div>
+                    <span>Total: {formatSize(total)}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="hdd-header">
+                  <span>💾 Storage</span>
+
+                  <strong>N/A</strong>
+                </div>
+              )}
             </div>
 
             {/* BACKUP */}
