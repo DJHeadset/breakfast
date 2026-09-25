@@ -93,7 +93,7 @@ function DashBoard() {
         </div>
 
         <div
-          className={`stat-box warning ${
+          className={`stat-box punishment ${
             kid.warnings >= 3 ? "warning-nuclear" : ""
           }`}
           style={{
