@@ -1,0 +1,62 @@
+/*RAIN*/
+.rain-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.rain-drop {
+  position: absolute;
+  top: -30px;
+  width: 2px;
+  background: rgba(180, 200, 230, 0.65);
+  transform: rotate(12deg);
+  animation: rain-fall linear infinite;
+}
+
+@keyframes rain-fall {
+  from {
+    transform: translateY(-30px) translateX(0) rotate(12deg);
+  }
+
+  to {
+    transform: translateY(110vh) translateX(8vw) rotate(12deg);
+  }
+}
+
+/*SNOW*/
+.snow-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.snow-flake {
+  position: absolute;
+  top: -20px;
+
+  border-radius: 50%;
+  background: white;
+
+  animation-name: snow-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes snow-fall {
+  0% {
+    transform: translateY(-20px) translateX(0);
+  }
+
+  50% {
+    transform: translateY(50vh) translateX(var(--snow-drift));
+  }
+
+  100% {
+    transform: translateY(110vh) translateX(calc(var(--snow-drift) * -1));
+  }
+}
