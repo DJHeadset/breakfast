@@ -5,8 +5,8 @@ import Breakfast from "./pages/Breakfast";
 import Welcome from "./pages/Welcome.jsx";
 import DashBoard from "./pages/Dashboard.jsx";
 import Status from "./pages/Status.jsx";
-import Dinner from "./pages/Dinner.jsx";
 import Shop from "./pages/Shop.jsx";
+import MathTest from "./pages/MathTest.jsx";
 
 const router = createBrowserRouter([
   {
@@ -22,8 +22,8 @@ const router = createBrowserRouter([
     element: <Status />,
   },
   {
-    path: "/dinner",
-    element: <Dinner />,
+    path: "/math",
+    element: <MathTest />,
   },
   {
     path: "/dashboard",

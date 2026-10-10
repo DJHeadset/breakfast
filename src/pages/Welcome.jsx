@@ -159,9 +159,9 @@ function Welcome() {
           <button
             className="btn btn-start"
             //style={{ position: "absolute", top: "0%", left: "57%" }}
-            onClick={() => navigate("/dinner")}
+            onClick={() => navigate("/math")}
           >
-            Vacsora szavazás
+            Matek Gyakorlás
           </button>
 
           <button

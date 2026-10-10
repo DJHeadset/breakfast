@@ -1,0 +1,245 @@
+
+.math-game {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 30px 20px;
+  text-align: center;
+  background: #111;
+  color: #f5f1e8;;
+  font-family: Arial, sans-serif;
+}
+
+.math-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #343a40;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.math-title {
+  margin: 35px 0;
+  font-size: clamp(28px, 5vw, 42px);
+}
+
+.math-problems {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.math-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  font-size: 28px;
+}
+
+.math-equation {
+  min-width: 110px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.math-input {
+  box-sizing: border-box;
+  width: 120px;
+  height: 52px;
+  padding: 6px;
+  border: 3px solid #a0a0a0;
+  border-radius: 10px;
+  background: white;
+  font-size: 26px;
+  text-align: center;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.math-input.correct {
+  border-color: #19a558;
+  background-color: #d9ffe5;
+}
+
+.math-input.incorrect {
+  border-color: #e33434;
+  background-color: #ffe0e0;
+  animation: wrong-flash 0.35s ease-in-out 2;
+}
+
+@keyframes wrong-flash {
+  50% {
+    background-color: #ffaaaa;
+  }
+}
+
+/* Victory celebration */
+
+.victory-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  overflow: hidden;
+  background: rgba(15, 20, 40, 0.92);
+  color: white;
+  animation: victory-appear 0.4s ease-out;
+}
+
+@keyframes victory-appear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.victory-title {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: clamp(42px, 9vw, 90px);
+  text-shadow: 0 0 20px #ffd700, 0 0 45px #ff7b00;
+  animation: victory-bounce 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes victory-bounce {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.fireworks {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.firework {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 0;
+  height: 0;
+}
+
+.firework span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: hsl(calc(var(--particle-index, 0) * 30), 100%, 60%);
+  box-shadow: 0 0 12px currentColor;
+  animation: firework-burst 1.4s ease-out var(--delay) both;
+}
+
+.firework span:nth-child(6n + 1) {
+  background: #ff4757;
+}
+
+.firework span:nth-child(6n + 2) {
+  background: #ffd32a;
+}
+
+.firework span:nth-child(6n + 3) {
+  background: #18dcff;
+}
+
+.firework span:nth-child(6n + 4) {
+  background: #7bed9f;
+}
+
+.firework span:nth-child(6n + 5) {
+  background: #e056fd;
+}
+
+.firework span:nth-child(6n) {
+  background: #ffffff;
+}
+
+@keyframes firework-burst {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateY(0) scale(0.4);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(-110px) scale(0);
+  }
+}
+
+/* New Game button appears after the celebration */
+
+.new-game-button {
+  position: relative;
+  z-index: 2;
+  padding: 16px 36px;
+  border: 3px solid white;
+  border-radius: 14px;
+  background: #19a558;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #0b7038;
+  animation: button-appear 0.4s ease-out;
+}
+
+.new-game-button:hover {
+  background: #20c568;
+  transform: translateY(-2px);
+}
+
+.new-game-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #0b7038;
+}
+
+@keyframes button-appear {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .victory-title {
+    animation: none;
+  }
+
+  .firework span {
+    animation-duration: 0.01ms;
+  }
+
+  .math-input.incorrect {
+    animation: none;
+  }
+}
