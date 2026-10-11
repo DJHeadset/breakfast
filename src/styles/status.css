@@ -568,3 +568,53 @@
 
   font-size: 0.9rem;
 }
+
+
+.pihole-summary {
+  margin-left: auto;
+  margin-right: 12px;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.current-things-note {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin: 0 0 12px;
+}
+
+.current-things-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.current-things-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+.current-thing-rank {
+  opacity: 0.6;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 500px) {
+  .current-things-list {
+    grid-template-columns: 1fr;
+  }
+
+  .pihole-summary {
+    display: none;
+  }
+}

@@ -178,7 +178,6 @@ function Status() {
   function BackupStatus({ house }) {
     const [expanded, setExpanded] = useState(false);
     const backup = house.backup;
-    //console.log(backup);
 
     const today = new Date().toLocaleDateString("en-CA");
     // Gives YYYY-MM-DD in most environments
@@ -304,12 +303,208 @@ function Status() {
     );
   }
 
+  function PiHoleStatus() {
+    const [expanded, setExpanded] = useState(true);
+    const [stats, setStats] = useState(null);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+      const controller = new AbortController();
+
+      const getPiHoleStatus = async () => {
+        try {
+          const res = await fetch(`${API_URL}/misc/get_pihole`, {
+            signal: controller.signal,
+          });
+
+          if (!res.ok) {
+            throw new Error(`Pi-hole status request failed: ${res.status}`);
+          }
+
+          const result = await res.json();
+          const data = result.data ?? result;
+
+          setStats(data);
+          setError(false);
+        } catch (err) {
+          if (err.name === "AbortError") return;
+
+          setError(true);
+          console.error("Failed to load Pi-hole status:", err);
+        }
+      };
+
+      getPiHoleStatus();
+
+      const interval = setInterval(getPiHoleStatus, 30000);
+
+      return () => {
+        controller.abort();
+        clearInterval(interval);
+      };
+    }, []);
+
+    const healthClass = error
+      ? "critical"
+      : !stats
+        ? "warning"
+        : stats.online
+          ? "online"
+          : "critical";
+
+    const Stat = ({ label, value }) => (
+      <div className="backup-detail-row">
+        <div className="backup-detail-text">
+          <span>{label}</span>
+          <strong>{value ?? "—"}</strong>
+        </div>
+      </div>
+    );
+
+    return (
+      <div className="backup-card pihole-card">
+        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
+          <div className="status-result">
+            <span className={`status-light ${healthClass}`} />
+          </div>
+
+          <div className="atticuus-title">
+            <span>🛡️ Pi-hole</span>
+          </div>
+
+          <span className="pihole-summary">
+            {error
+              ? "UNREACHABLE"
+              : !stats
+                ? "CHECKING..."
+                : stats.online
+                  ? "PROTECTING THE HOUSE"
+                  : "OFFLINE"}
+          </span>
+
+          <span>{expanded ? "▲" : "▼"}</span>
+        </button>
+
+        {expanded && (
+          <div className="backup-details">
+            {error ? (
+              <p>⚠️ Cannot retrieve Pi-hole statistics.</p>
+            ) : !stats ? (
+              <p>Consulting the machine spirit...</p>
+            ) : (
+              <>
+                <Stat
+                  label="🖥️ Active clients"
+                  value={
+                    stats.clients
+                      ? `${stats.clients.active}/${stats.clients.total}`
+                      : "—"
+                  }
+                />
+                <Stat
+                  label="🔎 DNS queries today"
+                  value={stats.queries_today?.toLocaleString()}
+                />
+                <Stat
+                  label="🚫 Queries blocked today"
+                  value={stats.blocked_today?.toLocaleString()}
+                />
+                <Stat
+                  label="📊 Blocking percentage"
+                  value={
+                    stats.blocked_percentage != null
+                      ? `${Number(stats.blocked_percentage).toFixed(1)}%`
+                      : "—"
+                  }
+                />
+                <Stat
+                  label="📡 Domains on blocklists"
+                  value={stats.domains_blocked?.toLocaleString()}
+                />
+                <Stat
+                  label="⚙️ DNS service"
+                  value={stats.dns ? "ONLINE" : "UNKNOWN / OFFLINE"}
+                />
+                <Stat
+                  label="📨 DHCP service"
+                  value={
+                    stats.dhcp
+                      ? `ONLINE\n DHCP Leases: ${stats.dhcp_leases ?? "—"}`
+                      : "OFFLINE"
+                  }
+                />
+                <Stat
+                  label="Blocking enabled"
+                  value={stats.blocking_enabled ? "ONLINE" : "OFFLINE"}
+                />
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const MOCK_CURRENT_THINGS = [
+    "#murderbees",
+    "#ebola",
+    "#scary_thing",
+    "#controversy",
+    "#brainrot",
+    "#skibiditoilet",
+    "#viralchallenge",
+    "#ragebait",
+    "#endlessscroll",
+    "#marvel",
+  ];
+
+  function CurrentThings() {
+    const [expanded, setExpanded] = useState(false);
+
+    // Mock data until the trend-miner backend is implemented.
+    const trends = MOCK_CURRENT_THINGS;
+
+    return (
+      <div className="backup-card current-things-card">
+        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
+          <div className="status-result">
+            <span className="status-light warning" />
+          </div>
+
+          <div className="atticuus-title">
+            <span>🚫 TOP 10 CURRENT THING</span>
+          </div>
+
+          <span>{expanded ? "▲" : "▼"}</span>
+        </button>
+
+        {expanded && (
+          <div className="backup-details">
+            <p className="current-things-note">
+              MOCK DATA — trend miner not connected yet
+            </p>
+
+            <ol className="current-things-list">
+              {trends.map((trend, index) => (
+                <li key={trend}>
+                  <span className="current-thing-rank">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <strong>{trend}</strong>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   useEffect(() => {
     const getStatus = async () => {
       try {
         const res = await fetch(`${API_URL}/misc/get_status`);
         const data = await res.json();
-        console.log(data.data);
         setHouse(data.data);
       } catch (error) {
         console.error("Failed to load house status:", error);
@@ -368,6 +563,8 @@ function Status() {
         />
 
         <BackupStatus house={house} />
+        <PiHoleStatus />
+        <CurrentThings />
       </section>
 
       {/* ==================== PERSON OF THE DAY ==================== */}
