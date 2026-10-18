@@ -183,12 +183,11 @@ function Status() {
   function InternetStatus({ house }) {
     const [expanded, setExpanded] = useState(false);
 
-    const healthClass = house?.internet
-      ? "critical"
-      : !stats
-        ? "warning"
-        : stats.online
-          ? "online"
+    const healthClass =
+      house?.internet === "ONLINE"
+        ? "online"
+        : house?.internet
+          ? "warning"
           : "critical";
 
     return (
