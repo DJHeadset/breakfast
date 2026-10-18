@@ -272,6 +272,18 @@
   opacity: 0.8;
 }
 
+.storage-good {
+  background: #2ecc71;
+}
+
+.storage-warning {
+  background: #f1c40f;
+}
+
+.storage-critical {
+  background: #e74c3c;
+}
+
 .backup-info {
   margin-top: 20px;
   padding: 20px;

@@ -139,16 +139,41 @@ function Status() {
   ];
 
   function CurrentThings() {
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(true);
+    const [trends, setTrends] = useState(MOCK_CURRENT_THINGS);
 
-    // Mock data until the trend-miner backend is implemented.
-    const trends = MOCK_CURRENT_THINGS;
+    useEffect(() => {
+      async function loadCurrentThings() {
+        try {
+          const res = await fetch(`${API_URL}/misc/get_current_things`, {});
+
+          if (!res.ok) {
+            throw new Error(`Top 10 status request failed: ${res.status}`);
+          }
+
+          const result = await res.json();
+          console.log(result.data ?? result);
+          setTrends(result.data ?? result);
+        } catch (error) {
+          console.warn(
+            "Could not load current trends; using mock data instead:",
+            error.message,
+          );
+        }
+      }
+
+      loadCurrentThings();
+    }, []);
 
     return (
       <div className="backup-card current-things-card">
-        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
+        <button
+          className="backup-main"
+          onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+        >
           <div className="status-result">
-            <span className="status-light warning" />
+            <span className={`status-light success}`} />
           </div>
 
           <div className="atticuus-title">
@@ -161,12 +186,15 @@ function Status() {
         {expanded && (
           <div className="backup-details">
             <p className="current-things-note">
-              MOCK DATA — trend miner not connected yet
+              Last update: {new Date(trends.updated_at).toLocaleString()}
             </p>
 
             <ol className="current-things-list">
-              {trends.map((trend, index) => (
-                <li key={trend}>
+              {(Array.isArray(trends.current_things)
+                ? trends.current_things
+                : MOCK_CURRENT_THINGS
+              ).map((trend, index) => (
+                <li key={`${trend}-${index}`}>
                   <span className="current-thing-rank">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -181,7 +209,7 @@ function Status() {
   }
 
   function InternetStatus({ house }) {
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(true);
 
     const healthClass =
       house?.internet === "ONLINE"

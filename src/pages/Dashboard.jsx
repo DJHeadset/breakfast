@@ -45,7 +45,7 @@ function DashBoard() {
     //console.log(boxes*50)
     setIsRestocking(false);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/misc/pills`, {
+      const res = await fetch(`${API_URL}/misc/pills`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
