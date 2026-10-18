@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/status.css";
-import { useEffect, useState } from "react";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -8,6 +8,8 @@ function Status() {
   const navigate = useNavigate();
 
   const [house, setHouse] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [piholeError, setPiholeError] = useState(false);
 
   function StatusRow({ name, healthClass }) {
     return (
@@ -19,8 +21,218 @@ function Status() {
     );
   }
 
-  function AtticuusStatus({ status, hdd, backup }) {
+  function PiHoleStatus() {
     const [expanded, setExpanded] = useState(false);
+
+    const healthClass = piholeError
+      ? "critical"
+      : !stats
+        ? "warning"
+        : stats.online
+          ? "online"
+          : "critical";
+
+    const Stat = ({ label, value }) => (
+      <div className="backup-detail-row">
+        <div className="backup-detail-text">
+          <span>{label}</span>
+          <strong>{value ?? "—"}</strong>
+        </div>
+      </div>
+    );
+
+    return (
+      <div className="backup-card pihole-card">
+        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
+          <div className="status-result">
+            <span className={`status-light ${healthClass}`} />
+          </div>
+
+          <div className="atticuus-title">
+            <span>🛡️ Pi-hole</span>
+          </div>
+
+          <span className="pihole-summary">
+            {piholeError
+              ? "UNREACHABLE"
+              : !stats
+                ? "CHECKING..."
+                : stats.online
+                  ? "PROTECTING THE HOUSE"
+                  : "OFFLINE"}
+          </span>
+
+          <span>{expanded ? "▲" : "▼"}</span>
+        </button>
+
+        {expanded && (
+          <div className="backup-details">
+            {piholeError ? (
+              <p>⚠️ Cannot retrieve Pi-hole statistics.</p>
+            ) : !stats ? (
+              <p>Consulting the machine spirit...</p>
+            ) : (
+              <>
+                <Stat
+                  label="🖥️ Active clients"
+                  value={
+                    stats.clients
+                      ? `${stats.clients.active}/${stats.clients.total}`
+                      : "—"
+                  }
+                />
+                <Stat
+                  label="🔎 DNS queries today"
+                  value={stats.queries_today?.toLocaleString()}
+                />
+                <Stat
+                  label="🚫 Queries blocked today"
+                  value={stats.blocked_today?.toLocaleString()}
+                />
+                <Stat
+                  label="📊 Blocking percentage"
+                  value={
+                    stats.blocked_percentage != null
+                      ? `${Number(stats.blocked_percentage).toFixed(1)}%`
+                      : "—"
+                  }
+                />
+                <Stat
+                  label="📡 Domains on blocklists"
+                  value={stats.domains_blocked?.toLocaleString()}
+                />
+                <Stat
+                  label="⚙️ DNS service"
+                  value={stats.dns ? "ONLINE" : "UNKNOWN / OFFLINE"}
+                />
+                <Stat
+                  label="📨 DHCP service"
+                  value={
+                    stats.dhcp
+                      ? `ONLINE\n DHCP Leases: ${stats.dhcp_leases ?? "—"}`
+                      : "OFFLINE"
+                  }
+                />
+                <Stat
+                  label="Blocking enabled"
+                  value={stats.blocking_enabled ? "ONLINE" : "OFFLINE"}
+                />
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const MOCK_CURRENT_THINGS = [
+    "#murderbees",
+    "#ebola",
+    "#scary_thing",
+    "#controversy",
+    "#brainrot",
+    "#skibiditoilet",
+    "#viralchallenge",
+    "#ragebait",
+    "#endlessscroll",
+    "#marvel",
+  ];
+
+  function CurrentThings() {
+    const [expanded, setExpanded] = useState(false);
+
+    // Mock data until the trend-miner backend is implemented.
+    const trends = MOCK_CURRENT_THINGS;
+
+    return (
+      <div className="backup-card current-things-card">
+        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
+          <div className="status-result">
+            <span className="status-light warning" />
+          </div>
+
+          <div className="atticuus-title">
+            <span>🚫 TOP 10 CURRENT THING</span>
+          </div>
+
+          <span>{expanded ? "▲" : "▼"}</span>
+        </button>
+
+        {expanded && (
+          <div className="backup-details">
+            <p className="current-things-note">
+              MOCK DATA — trend miner not connected yet
+            </p>
+
+            <ol className="current-things-list">
+              {trends.map((trend, index) => (
+                <li key={trend}>
+                  <span className="current-thing-rank">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <strong>{trend}</strong>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function InternetStatus({ house }) {
+    const [expanded, setExpanded] = useState(false);
+
+    const healthClass = house?.internet
+      ? "critical"
+      : !stats
+        ? "warning"
+        : stats.online
+          ? "online"
+          : "critical";
+
+    return (
+      <div className="backup-card">
+        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
+          <div className="status-result">
+            <span className={`status-light ${healthClass}`} />
+          </div>
+
+          <div>
+            <span>
+              {stats?.clients?.active ?? 0}/{stats?.clients?.total ?? 0}
+            </span>
+          </div>
+
+          <div>
+            <span>
+              {stats?.blocked_percentage != null
+                ? `${Number(stats.blocked_percentage).toFixed(1)}%`
+                : "N/A"}
+            </span>
+          </div>
+
+          <div className="atticuus-title">
+            <span>Internet</span>
+          </div>
+        </button>
+
+        {expanded && (
+          <div className="backup-details">
+            <PiHoleStatus />
+            <CurrentThings />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function AtticuusStatus({ house }) {
+    const [expanded, setExpanded] = useState(false);
+
+    const status = house.status;
+    const hdd = house.hdd;
+    const backup = house.backup;
 
     /* ================= STORAGE CALCULATIONS ================= */
 
@@ -68,13 +280,10 @@ function Status() {
     }
 
     return (
-      <div className={`atticuus-card`}>
+      <div className={`backup-card`}>
         {/* ================= MAIN BAR ================= */}
 
-        <button
-          className="atticuus-main"
-          onClick={() => setExpanded(!expanded)}
-        >
+        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
           <div className="status-result">
             <span className={`status-light ${healthClass}`} />
 
@@ -89,22 +298,17 @@ function Status() {
         {/* ================= EXPANDABLE DETAILS ================= */}
 
         {expanded && (
-          <div className="atticuus-details">
+          <div className="backup-details">
             {/* ONLINE STATUS */}
+            <StatusRow
+              name="📡 Network"
+              healthClass={status === "ONLINE" ? "online" : "critical"}
+            />
 
-            <div className="atticuus-detail-row">
-              <span>📡 Network</span>
-
-              <span className="detail-status">
-                <span
-                  className={`status-light ${
-                    status === "ONLINE" ? "online" : "critical"
-                  }`}
-                />
-
-                {status}
-              </span>
-            </div>
+            <StatusRow
+              name="💾 Backups"
+              healthClass={backup.status === "OK" ? "online" : "critical"}
+            />
 
             {/* HDD STORAGE */}
 
@@ -136,28 +340,15 @@ function Status() {
                 </>
               ) : (
                 <div className="hdd-header">
-                  <span>💾 Storage</span>
-
                   <strong>N/A</strong>
+
+                  <span>💾 Storage</span>
                 </div>
               )}
             </div>
 
             {/* BACKUP */}
 
-            <div className="atticuus-detail-row">
-              <span>💾 Backups</span>
-
-              <span className="detail-status">
-                <span
-                  className={`status-light ${
-                    backup?.status === "OK" ? "online" : "critical"
-                  }`}
-                />
-
-                {backup?.status || "UNKNOWN"}
-              </span>
-            </div>
             <div className="backup-info">
               <div>
                 📅 Backup date:
@@ -303,211 +494,46 @@ function Status() {
     );
   }
 
-  function PiHoleStatus() {
-    const [expanded, setExpanded] = useState(true);
-    const [stats, setStats] = useState(null);
-    const [error, setError] = useState(false);
-
-    useEffect(() => {
-      const controller = new AbortController();
-
-      const getPiHoleStatus = async () => {
-        try {
-          const res = await fetch(`${API_URL}/misc/get_pihole`, {
-            signal: controller.signal,
-          });
-
-          if (!res.ok) {
-            throw new Error(`Pi-hole status request failed: ${res.status}`);
-          }
-
-          const result = await res.json();
-          const data = result.data ?? result;
-
-          setStats(data);
-          setError(false);
-        } catch (err) {
-          if (err.name === "AbortError") return;
-
-          setError(true);
-          console.error("Failed to load Pi-hole status:", err);
-        }
-      };
-
-      getPiHoleStatus();
-
-      const interval = setInterval(getPiHoleStatus, 30000);
-
-      return () => {
-        controller.abort();
-        clearInterval(interval);
-      };
-    }, []);
-
-    const healthClass = error
-      ? "critical"
-      : !stats
-        ? "warning"
-        : stats.online
-          ? "online"
-          : "critical";
-
-    const Stat = ({ label, value }) => (
-      <div className="backup-detail-row">
-        <div className="backup-detail-text">
-          <span>{label}</span>
-          <strong>{value ?? "—"}</strong>
-        </div>
-      </div>
-    );
-
-    return (
-      <div className="backup-card pihole-card">
-        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
-          <div className="status-result">
-            <span className={`status-light ${healthClass}`} />
-          </div>
-
-          <div className="atticuus-title">
-            <span>🛡️ Pi-hole</span>
-          </div>
-
-          <span className="pihole-summary">
-            {error
-              ? "UNREACHABLE"
-              : !stats
-                ? "CHECKING..."
-                : stats.online
-                  ? "PROTECTING THE HOUSE"
-                  : "OFFLINE"}
-          </span>
-
-          <span>{expanded ? "▲" : "▼"}</span>
-        </button>
-
-        {expanded && (
-          <div className="backup-details">
-            {error ? (
-              <p>⚠️ Cannot retrieve Pi-hole statistics.</p>
-            ) : !stats ? (
-              <p>Consulting the machine spirit...</p>
-            ) : (
-              <>
-                <Stat
-                  label="🖥️ Active clients"
-                  value={
-                    stats.clients
-                      ? `${stats.clients.active}/${stats.clients.total}`
-                      : "—"
-                  }
-                />
-                <Stat
-                  label="🔎 DNS queries today"
-                  value={stats.queries_today?.toLocaleString()}
-                />
-                <Stat
-                  label="🚫 Queries blocked today"
-                  value={stats.blocked_today?.toLocaleString()}
-                />
-                <Stat
-                  label="📊 Blocking percentage"
-                  value={
-                    stats.blocked_percentage != null
-                      ? `${Number(stats.blocked_percentage).toFixed(1)}%`
-                      : "—"
-                  }
-                />
-                <Stat
-                  label="📡 Domains on blocklists"
-                  value={stats.domains_blocked?.toLocaleString()}
-                />
-                <Stat
-                  label="⚙️ DNS service"
-                  value={stats.dns ? "ONLINE" : "UNKNOWN / OFFLINE"}
-                />
-                <Stat
-                  label="📨 DHCP service"
-                  value={
-                    stats.dhcp
-                      ? `ONLINE\n DHCP Leases: ${stats.dhcp_leases ?? "—"}`
-                      : "OFFLINE"
-                  }
-                />
-                <Stat
-                  label="Blocking enabled"
-                  value={stats.blocking_enabled ? "ONLINE" : "OFFLINE"}
-                />
-              </>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  const MOCK_CURRENT_THINGS = [
-    "#murderbees",
-    "#ebola",
-    "#scary_thing",
-    "#controversy",
-    "#brainrot",
-    "#skibiditoilet",
-    "#viralchallenge",
-    "#ragebait",
-    "#endlessscroll",
-    "#marvel",
-  ];
-
-  function CurrentThings() {
-    const [expanded, setExpanded] = useState(false);
-
-    // Mock data until the trend-miner backend is implemented.
-    const trends = MOCK_CURRENT_THINGS;
-
-    return (
-      <div className="backup-card current-things-card">
-        <button className="backup-main" onClick={() => setExpanded(!expanded)}>
-          <div className="status-result">
-            <span className="status-light warning" />
-          </div>
-
-          <div className="atticuus-title">
-            <span>🚫 TOP 10 CURRENT THING</span>
-          </div>
-
-          <span>{expanded ? "▲" : "▼"}</span>
-        </button>
-
-        {expanded && (
-          <div className="backup-details">
-            <p className="current-things-note">
-              MOCK DATA — trend miner not connected yet
-            </p>
-
-            <ol className="current-things-list">
-              {trends.map((trend, index) => (
-                <li key={trend}>
-                  <span className="current-thing-rank">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <strong>{trend}</strong>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   useEffect(() => {
+    const controller = new AbortController();
+
     const getStatus = async () => {
+      // Fetch house status
       try {
-        const res = await fetch(`${API_URL}/misc/get_status`);
-        const data = await res.json();
-        setHouse(data.data);
+        const res = await fetch(`${API_URL}/misc/get_status`, {
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          throw new Error(`House status request failed: ${res.status}`);
+        }
+
+        const result = await res.json();
+        setHouse(result.data);
       } catch (error) {
-        console.error("Failed to load house status:", error);
+        if (error.name !== "AbortError") {
+          console.error("Failed to load house status:", error);
+        }
+      }
+
+      // Fetch Pi-hole status
+      try {
+        const res = await fetch(`${API_URL}/misc/get_pihole`, {
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          throw new Error(`Pi-hole status request failed: ${res.status}`);
+        }
+
+        const result = await res.json();
+        setStats(result.data ?? result);
+        setPiholeError(false);
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          setPiholeError(true);
+          console.error("Failed to load Pi-hole status:", error);
+        }
       }
     };
 
@@ -515,7 +541,10 @@ function Status() {
 
     const interval = setInterval(getStatus, 30000);
 
-    return () => clearInterval(interval);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
   }, []);
 
   if (!house) {
@@ -541,35 +570,15 @@ function Status() {
       <h1 className="title">🏠 HOUSE STATUS</h1>
 
       <section className="status-section">
-        {/* ==================== NETWORK & MACHINES ==================== */}
-
         <h2>🌐 NETWORK & MACHINES</h2>
 
-        <StatusRow
-          name="Internet"
-          healthClass={
-            house?.internet === "ONLINE"
-              ? "online"
-              : house?.internet
-                ? "warning"
-                : "critical"
-          }
-        />
+        <InternetStatus house={house} />
 
-        <AtticuusStatus
-          status={house.atticuus}
-          hdd={house.atticuus_hdd}
-          backup={house.backup}
-        />
+        <AtticuusStatus house={house} />
 
         <BackupStatus house={house} />
-        <PiHoleStatus />
-        <CurrentThings />
       </section>
-
-      {/* ==================== PERSON OF THE DAY ==================== */}
-
-      <section className="person-section">
+      <section className="status-section">
         <h2>👑 PERSON OF THE DAY 👑</h2>
 
         <div className="person-of-the-day">
@@ -600,8 +609,6 @@ function Status() {
           </div>
         </div>
       </section>
-
-      {/* ==================== LAST UPDATE ==================== */}
 
       <div className="last-updated">
         🕒 Last updated:

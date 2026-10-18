@@ -73,7 +73,6 @@ function Welcome() {
         const data = await response.json();
 
         setWeather(data.current);
-        console.log("Weather:", data.current);
       } catch (error) {
         console.error("Could not get weather:", error);
       }
