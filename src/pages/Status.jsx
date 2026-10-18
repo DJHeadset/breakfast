@@ -230,8 +230,8 @@ function Status() {
   function AtticuusStatus({ house }) {
     const [expanded, setExpanded] = useState(false);
 
-    const status = house.status;
-    const hdd = house.hdd;
+    const status = house.atticuus;
+    const hdd = house.atticuus_hdd;
     const backup = house.backup;
 
     /* ================= STORAGE CALCULATIONS ================= */
