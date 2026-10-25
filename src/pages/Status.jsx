@@ -9,6 +9,7 @@ function Status() {
 
   const [house, setHouse] = useState(null);
   const [stats, setStats] = useState(null);
+  const [jellyFinStatus, setJellyFinStatus] = useState(null);
   const [piholeError, setPiholeError] = useState(false);
 
   function StatusRow({ name, healthClass }) {
@@ -139,7 +140,7 @@ function Status() {
   ];
 
   function CurrentThings() {
-    const [expanded, setExpanded] = useState(true);
+    const [expanded, setExpanded] = useState(false);
     const [trends, setTrends] = useState(MOCK_CURRENT_THINGS);
 
     useEffect(() => {
@@ -209,7 +210,7 @@ function Status() {
   }
 
   function InternetStatus({ house }) {
-    const [expanded, setExpanded] = useState(true);
+    const [expanded, setExpanded] = useState(false);
 
     const healthClass =
       house?.internet === "ONLINE"
@@ -521,6 +522,78 @@ function Status() {
     );
   }
 
+  function JellyfinStatus() {
+    const [expanded, setExpanded] = useState(false);
+
+    const items = Array.isArray(jellyFinStatus)
+      ? [...jellyFinStatus].sort(
+          (a, b) => new Date(b.receivedAt) - new Date(a.receivedAt),
+        )
+      : [];
+
+    console.log(items);
+
+    const formatItem = (item) => {
+      if (item.itemType === "Episode") {
+        const season = String(item.seasonNumber).padStart(2, "0");
+        const episode = String(item.episodeNumber).padStart(2, "0");
+
+        return `${item.seriesName} S${season}E${episode} ${item.name}`;
+      }
+
+      if (item.itemType === "Movie") {
+        return item.name;
+      }
+
+      // Fallback for Unknown or other item types
+      return item.seriesName
+        ? `${item.seriesName} S${item.seasonNumber}E${item.episodeNumber} ${item.name}`
+        : item.name;
+    };
+
+    return (
+      <div className="backup-card">
+        <button
+          className="backup-main"
+          onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+        >
+          <small>
+            {items.length} new item{items.length !== 1 ? "s" : ""}
+          </small>
+
+          <div className="atticuus-title">
+            <span>📺 Jellyfin</span>
+          </div>
+        </button>
+
+        {expanded && (
+          <div className="backup-details">
+            <span>🎬 Recently added</span>
+
+            {items.length === 0 ? (
+              <strong>No items received yet</strong>
+            ) : (
+              <ul className="jellyfin-items">
+                {items.map((item) => (
+                  <li key={item.itemId}>
+                    <strong>{formatItem(item)}</strong>
+
+                    <small>
+                      {item.receivedAt
+                        ? new Date(item.receivedAt).toLocaleString()
+                        : "Unknown date"}
+                    </small>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -560,6 +633,23 @@ function Status() {
         if (error.name !== "AbortError") {
           setPiholeError(true);
           console.error("Failed to load Pi-hole status:", error);
+        }
+      }
+      try {
+        const res = await fetch(`${API_URL}/jellyfin/get_items`, {
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          throw new Error(`Jellifin status request failed: ${res.status}`);
+        }
+
+        const result = await res.json();
+        console.log(result);
+        setJellyFinStatus(result);
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Failed to load Jellyfin items:", error);
         }
       }
     };
@@ -604,6 +694,7 @@ function Status() {
         <AtticuusStatus house={house} />
 
         <BackupStatus house={house} />
+        <JellyfinStatus />
       </section>
       <section className="status-section">
         <h2>👑 PERSON OF THE DAY 👑</h2>

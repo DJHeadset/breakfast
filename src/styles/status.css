@@ -291,3 +291,27 @@
   background: rgba(255, 255, 255, 0.05);
   text-align: center;
 }
+
+.jellyfin-items {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+.jellyfin-items li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+  overflow-wrap: anywhere;
+}
+
+.jellyfin-items li:last-child {
+  border-bottom: none;
+}
+
+.jellyfin-items li small {
+  opacity: 0.7;
+  font-size: 0.8rem;
+}
