@@ -170,6 +170,13 @@ function Welcome() {
           >
             Gyerekek
           </button>
+
+          <button
+            className="btn btn-start"
+            onClick={() => navigate("/watchlist")}
+          >
+            Watchlist
+          </button>
         </div>
       </div>
     </div>

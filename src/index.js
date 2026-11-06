@@ -7,6 +7,7 @@ import DashBoard from "./pages/Dashboard.jsx";
 import Status from "./pages/Status.jsx";
 import Shop from "./pages/Shop.jsx";
 import MathTest from "./pages/MathTest.jsx";
+import YoutubeWatchList from "./pages/YoutubeWatchList.jsx";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: "/shop/:kid",
     element: <Shop />,
+  },
+    {
+    path: "/watchlist",
+    element: <YoutubeWatchList />,
   },
 ]);
 
