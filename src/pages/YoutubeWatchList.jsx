@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-//import "../styles/status.css";
 import "../styles/watchlist.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -9,6 +8,47 @@ function YoutubeWatchList() {
   const navigate = useNavigate();
 
   const [watchList, setWatchlist] = useState(null);
+
+  async function watchedButtonHandler(creator, i) {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/misc/watched`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              creator: creator,
+              id: i,
+            }),
+          },
+      );
+    if (!res.ok) {
+      throw new Error(`HTTP error: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (data.success) {
+      setWatchlist((prev) =>
+        prev.map((item) =>
+          item.name === data.creator
+            ? {
+                ...item,
+                videos: item.videos.map((video, index) =>
+                  index === data.id
+                    ? { ...video, watched: data.watched }
+                    : video
+                ),
+              }
+            : item
+        )
+      );
+    }
+  } catch (err) {
+    console.error("Failed to mark video as watched:", err);
+  }
+  }
 
   useEffect(() => {
     const getWatchlist = async () => {
@@ -59,19 +99,13 @@ function YoutubeWatchList() {
                   alt={creator.name}
                   crossOrigin="anonymous"
                   referrerPolicy="no-referrer"
-                  style={{
-                    width: "60px",
-                    height: "60px",
-                    objectFit: "cover",
-                    borderRadius: "50%",
-                  }}
                 />
                 <strong>{creator.name}</strong>
               </div>
 
               <ul className="video-list">
-                {creator.videos.map((video) => (
-                  <li key={video.link} className="video-item">
+                {creator.videos.map((video, i) => (
+                  <li key={i} className="video-item">
                     <a
                       href={video.link}
                       target="_blank"
@@ -81,7 +115,12 @@ function YoutubeWatchList() {
                       {video.title}
                     </a>
 
-                    <button className="btn btn-watched">WATCHED</button>
+                    <button
+                      className="btn btn-watched"
+                      onClick={() => watchedButtonHandler(creator.name, i)}
+                    >
+                      WATCHED
+                    </button>
                   </li>
                 ))}
               </ul>
