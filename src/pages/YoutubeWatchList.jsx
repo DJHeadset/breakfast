@@ -11,43 +11,68 @@ function YoutubeWatchList() {
 
   async function watchedButtonHandler(creator, i) {
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/misc/watched`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              creator: creator,
-              id: i,
-            }),
-          },
-      );
-    if (!res.ok) {
-      throw new Error(`HTTP error: ${res.status}`);
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/misc/watched`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          creator: creator,
+          id: i,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP error: ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      if (data.success) {
+        setWatchlist((prev) =>
+          prev.map((item) =>
+            item.name === data.creator
+              ? {
+                  ...item,
+                  videos: item.videos.map((video, index) =>
+                    index === data.id
+                      ? { ...video, watched: data.watched }
+                      : video,
+                  ),
+                }
+              : item,
+          ),
+        );
+      }
+    } catch (err) {
+      console.error("Failed to mark video as watched:", err);
     }
+  }
 
-    const data = await res.json();
+  async function markVideoAsSeen(creatorName, index) {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/misc/seen`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ creator: creatorName, id: index }),
+      });
 
-    if (data.success) {
-      setWatchlist((prev) =>
-        prev.map((item) =>
-          item.name === data.creator
+      if (!res.ok) throw new Error("Failed to mark video as seen");
+
+      setWatchlist((previous) =>
+        previous.map((creator) =>
+          creator.name === creatorName
             ? {
-                ...item,
-                videos: item.videos.map((video, index) =>
-                  index === data.id
-                    ? { ...video, watched: data.watched }
-                    : video
+                ...creator,
+                videos: creator.videos.map((video, i) =>
+                  i === index ? { ...video, new: false } : video,
                 ),
               }
-            : item
-        )
+            : creator,
+        ),
       );
+    } catch (err) {
+      console.error(err);
     }
-  } catch (err) {
-    console.error("Failed to mark video as watched:", err);
-  }
   }
 
   useEffect(() => {
@@ -105,7 +130,15 @@ function YoutubeWatchList() {
 
               <ul className="video-list">
                 {creator.videos.map((video, i) => (
-                  <li key={i} className="video-item">
+                  <li
+                    key={video.link}
+                    className={`video-item ${video.new ? "video-new" : ""}`}
+                    onMouseEnter={() => {
+                      if (video.new) {
+                        markVideoAsSeen(creator.name, i);
+                      }
+                    }}
+                  >
                     <a
                       href={video.link}
                       target="_blank"
@@ -114,6 +147,8 @@ function YoutubeWatchList() {
                     >
                       {video.title}
                     </a>
+
+                    {video.new && <span className="new-label">NEW</span>}
 
                     <button
                       className="btn btn-watched"

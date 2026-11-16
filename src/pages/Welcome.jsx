@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 function Welcome() {
   const navigate = useNavigate();
   const [weather, setWeather] = useState(null);
+  const [newVideos, setNewVideos] = useState(0);
 
   const month = new Date().getMonth();
   let village;
@@ -78,7 +79,29 @@ function Welcome() {
       }
     };
 
+    const getWatchlistCount = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/misc/get_watchlist`,
+        );
+
+        if (!res.ok) throw new Error("Watchlist request failed");
+
+        const result = await res.json();
+        const count = result.creators.reduce(
+          (total, creator) =>
+            total + creator.videos.filter((video) => video.new === true).length,
+          0,
+        );
+
+        setNewVideos(count);
+      } catch (err) {
+        console.error("Failed to get watchlist count:", err);
+      }
+    };
+
     getWeather();
+    getWatchlistCount();
 
     const interval = setInterval(getWeather, 15 * 60 * 1000);
 
@@ -141,41 +164,34 @@ function Welcome() {
         <div className="menu-buttons">
           <button
             className="btn btn-start"
-            //style={{ position: "absolute", top: "20px", left: "-156%" }}
             onClick={() => navigate("/breakfast")}
           >
             Reggeli Rulett
           </button>
 
-          <button
-            className="btn btn-start"
-            //style={{ position: "absolute", top: "20px", left: "150%" }}
-            onClick={() => navigate("/status")}
-          >
+          <button className="btn btn-start" onClick={() => navigate("/status")}>
             STATUS
           </button>
 
-          <button
-            className="btn btn-start"
-            //style={{ position: "absolute", top: "0%", left: "57%" }}
-            onClick={() => navigate("/math")}
-          >
+          <button className="btn btn-start" onClick={() => navigate("/math")}>
             Matek Gyakorlás
           </button>
 
           <button
             className="btn btn-start"
-            //style={{ position: "absolute", top: "300%", left: "121%" }}
             onClick={() => navigate("/dashboard")}
           >
             Gyerekek
           </button>
 
           <button
-            className="btn btn-start"
+            className="btn btn-start watchlist-button"
             onClick={() => navigate("/watchlist")}
           >
             Watchlist
+            {newVideos > 0 && (
+              <span className="notification-badge">{newVideos}</span>
+            )}
           </button>
         </div>
       </div>
