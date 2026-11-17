@@ -16,6 +16,7 @@ function Welcome() {
   const navigate = useNavigate();
   const [weather, setWeather] = useState(null);
   const [newVideos, setNewVideos] = useState(0);
+  const [messages, setMessages] = useState([]);
 
   const month = new Date().getMonth();
   let village;
@@ -100,8 +101,24 @@ function Welcome() {
       }
     };
 
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/misc/last_messages`,
+        );
+
+        if (!response.ok) throw new Error("Could not fetch messages");
+
+        const data = await response.json();
+        setMessages(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching machine logs:", err);
+      }
+    };
+
     getWeather();
     getWatchlistCount();
+    fetchMessages();
 
     const interval = setInterval(getWeather, 15 * 60 * 1000);
 
@@ -158,41 +175,59 @@ function Welcome() {
           zIndex: 3,
         }}
       />
-      <div style={{ position: "relative", zIndex: 4 }}>
-        <h1 className="title">BLAHO</h1>
+      <div className="home-layout" style={{ zIndex: 4 }}>
+        {/* LEFT: MENU */}
+        <div className="menu-area">
+          <div className="menu-buttons">
+            <button
+              className="btn btn-start"
+              onClick={() => navigate("/breakfast")}
+            >
+              Reggeli Rulett
+            </button>
 
-        <div className="menu-buttons">
-          <button
-            className="btn btn-start"
-            onClick={() => navigate("/breakfast")}
-          >
-            Reggeli Rulett
-          </button>
+            <button
+              className="btn btn-start"
+              onClick={() => navigate("/status")}
+            >
+              STATUS
+            </button>
 
-          <button className="btn btn-start" onClick={() => navigate("/status")}>
-            STATUS
-          </button>
+            <button className="btn btn-start" onClick={() => navigate("/math")}>
+              Matek Gyakorlás
+            </button>
 
-          <button className="btn btn-start" onClick={() => navigate("/math")}>
-            Matek Gyakorlás
-          </button>
+            <button
+              className="btn btn-start"
+              onClick={() => navigate("/dashboard")}
+            >
+              Gyerekek
+            </button>
 
-          <button
-            className="btn btn-start"
-            onClick={() => navigate("/dashboard")}
-          >
-            Gyerekek
-          </button>
+            <button
+              className="btn btn-start watchlist-button"
+              onClick={() => navigate("/watchlist")}
+            >
+              Watchlist
+              {newVideos > 0 && (
+                <span className="notification-badge">{newVideos}</span>
+              )}
+            </button>
+          </div>
+        </div>
 
-          <button
-            className="btn btn-start watchlist-button"
-            onClick={() => navigate("/watchlist")}
-          >
-            Watchlist
-            {newVideos > 0 && (
-              <span className="notification-badge">{newVideos}</span>
-            )}
-          </button>
+        {/* RIGHT: MACHINE SPIRIT LOG */}
+        <div className="machine-log">
+          <h3>MACHINE SPIRIT LOG</h3>
+
+          <div className="machine-log-messages">
+            {messages.slice().map((item, index) => (
+              <div className="machine-log-entry" key={item.timestamp || index}>
+                <span className="machine-log-time">{item.displayTime}</span>
+                <p>{item.message}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
